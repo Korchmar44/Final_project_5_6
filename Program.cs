@@ -1,52 +1,86 @@
-﻿using System;
-using System.Numerics;
-using static System.Net.Mime.MediaTypeNames;
-
-class MainClass
+﻿class MainClass
 {
 
-    //(string Name, string LastName, int Age, bool HasPet, string[] PetsName, string[] FavColors) User;
+    
 
     public static void Main(string[] args)
     {
-        
         var user = GetUserData();
-        Console.WriteLine(user);
-        
+
+        Console.WriteLine($"Имя пользователя: {user.name},\nФамилия пользователя: {user.lastName},\nВозрасте пользователя: {user.age}\n");
+
+        if (user.petsName.Length == 1)
+        {
+            Console.WriteLine($"У пользователя 1 питомец по кличке\n{string.Join("\n ", user.petsName)}\n");
+        }
+        else if ((user.petsName.Length >= 2) && (user.petsName.Length < 5))
+        {
+            Console.WriteLine($"У пользователя {user.petsName.Length} питомца с кличками\n{string.Join("\n", user.petsName)}\n");
+        }
+        else if ((user.petsName.Length >= 5))
+        {
+            Console.WriteLine($"У пользователя {user.petsName.Length} питомцев с кличками\n{string.Join("\n", user.petsName)}\n");
+        }
+        else
+        {
+            Console.WriteLine("У пользователя нет питомцев\n");
+        }
+
+        if (user.colorsName.Length == 1)
+        {
+            Console.WriteLine($"У пользователя 1 любимый цвет\n{string.Join(" ", user.colorsName)}\n");
+        }
+        else if ((user.colorsName.Length >= 2) && (user.colorsName.Length < 5))
+        {
+            Console.WriteLine($"У пользователя {user.colorsName.Length} любимых цвета\n{string.Join("\n", user.colorsName)}\n");
+        }
+        else if ((user.colorsName.Length >= 5))
+        {
+            Console.WriteLine($"У пользователя {user.colorsName.Length} любимых цветов\n{string.Join("\n", user.colorsName)}\n");
+        }
+        else
+        {
+            Console.WriteLine("У пользователя нет любимых цветов\n");
+        }
     }
 
-    static (string name, string lastName, int age/*, string[] petsName, string[] colorsName*/) GetUserData() 
+    static (string name, string lastName, int age, string[] petsName, string[] colorsName) GetUserData()
     {
+        (string Name, string LastName, int Age, string[] PetsName, string[] FavColors) User;
+
         Console.WriteLine("Введите имя");
-        string name = CheckStringData(Console.ReadLine());
+        User.Name = CheckStringData(Console.ReadLine());
 
         Console.WriteLine("Введите фамилию");
-        string lastName = CheckStringData(Console.ReadLine());
+        User.LastName = CheckStringData(Console.ReadLine());
 
         Console.WriteLine("Введите ваш возраст");
-        int age =Convert.ToInt32(CheckIntData(Console.ReadLine()));
+        User.Age = Convert.ToInt32(CheckIntData(Console.ReadLine()));
 
-        Console.Clear();
-       var userData = (name, lastName, age/*, petsName,*/ );
+        User.PetsName = IsHavePet();
 
-        return userData;
+        User.FavColors = FavColor();
+
+
+
+        return User;
     }
 
-    static string CheckStringData(string? str) 
+    static string CheckStringData(string str) 
     {
         bool correctData = false;
 
         do
         {
-            if (String.IsNullOrEmpty(str) || String.IsNullOrWhiteSpace(str))
+            if (System.String.IsNullOrEmpty(str) || System.String.IsNullOrWhiteSpace(str))
             {
                 Console.WriteLine("Данные не могут быть пустой строкой или состоять из пробелов\nНеобходимо заново внести данные");
-                GetUserData();
+                CheckStringData(Console.ReadLine());
             }
             else if (int.TryParse(str, out int number))
             {
                 Console.WriteLine("Необходимо заново ввести тексторвые данные");
-                GetUserData();
+                CheckStringData(Console.ReadLine());
             }
             else
             {
@@ -57,7 +91,7 @@ class MainClass
         return str;
     }
 
-    static int CheckIntData(string? num)
+    static int CheckIntData(string num)
     {
         bool correctData = false;
 
@@ -66,12 +100,12 @@ class MainClass
             if (int.TryParse(num, out int number) && number <= 0)
             {
                 Console.WriteLine("Возраст не может быть меньше или равет 0.  Необходимо заново ввести данные");
-                GetUserData();
+                CheckIntData(Console.ReadLine());
             }
             else if (!int.TryParse(num, out int is_number))
             {
                 Console.WriteLine("Число не распознано, Необходимо заново ввести данные");
-                GetUserData();
+                CheckIntData(Console.ReadLine());
             }
             else
             {
@@ -82,31 +116,26 @@ class MainClass
         return Convert.ToInt32(num);
     }
 
-    static (bool HasPet, string[] PetsName) IsHasPet()
+    static string[] IsHavePet()
     {
-        bool hasPet = false;
-        string[] pets_name = null;
+        bool havePet = false;
+        int petsNumber = 0;
+        string[] petsName;
 
         Console.WriteLine("У вас есть домашний питомец? (да/нет)");
+        if (Console.ReadLine() == "да") havePet = true;
 
-        if (Console.ReadLine() == "да") hasPet = true;
-        if (hasPet)
+        if (havePet)
         {
             Console.WriteLine("Введите колличество питомцев");
-            byte num_pets = Convert.ToByte(Console.ReadLine());
-            if (num_pets <= 0) 
+            petsNumber = Convert.ToByte(Console.ReadLine());
+            if (petsNumber <= 0)
             {
-                Console.WriteLine("Колличество питомцев не может быть меньше или равно нулю ");
-                IsHasPet();
-            }
-            else
-            {
-                //pets_name = new string[num_pets];
-                pets_name = PetsName(num_pets);
+                Console.WriteLine("Вы указали то, что у вас есть питомцы поэтому Колличество питомцев не может быть меньше или равно нулю ");
+                IsHavePet();
             }
         }
-        var isHasPet = (hasPet, pets_name);
-        return isHasPet;
+        return petsName = PetsName(petsNumber);
     }
 
     static string[] PetsName(int number_pets)
@@ -125,7 +154,7 @@ class MainClass
     static string[] FavColor()
     {
         Console.WriteLine("Введите колличество любимых цветов");
-        byte numColors = Convert.ToByte(Console.ReadLine());
+        int numColors = Convert.ToByte(Console.ReadLine());
 
         Console.WriteLine("Введите любимые цвета пользователя");
         string[] favColors = new string[numColors];
@@ -136,22 +165,9 @@ class MainClass
             counter++;
             Console.WriteLine("Следующий цвет");
         }
-        Console.WriteLine("Готово");
+        Console.WriteLine("Готово\n\n");
 
+        Console.Clear();
         return favColors;
     }
-
-    //static (string Name, string LastName, int Age, bool HasPet, string[] PetsName, string[] FavColors) CheckNumber()
-    //{
-    //    (string Name, string LastName, int Age, bool HasPet, string[] PetsName, string[] FavColors) UserData;
-
-    //    UserData.Name = GetUserData().Name;
-    //    UserData.LastName = GetUserData().LastName;
-    //    UserData.Age = GetUserData().Age;
-    //    UserData.HasPet = IsHasPet().HasPet;
-    //    UserData.PetsName = IsHasPet().PetsName;
-    //    UserData.FavColors = FavColor();
-
-    //    return UserData;
-    //}
 }
